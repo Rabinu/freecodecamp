@@ -12,7 +12,9 @@ let boardHeight = 5;
 //let generation = 1;
 let cellCount = 0;
 
-
+function async (fn) {
+    setTimeout(fn, 1000);
+}
 
 class CreateBoard extends React.Component {
   constructor(props) {
@@ -23,7 +25,7 @@ class CreateBoard extends React.Component {
 
   }
 
-  drawBoard() {
+  fillDeadArray() {
     let height = this.props.height;
     let width = this.props.width;
 
@@ -38,15 +40,14 @@ class CreateBoard extends React.Component {
 
   }
 
-  drawBoard2() {
-    this.drawBoard();
+  mapArray() {
     return (
       board.map(function(input, irow) {
         return (
           <div className="row" key={`cell-${irow}`}>{
       input.map(function(array, icol){
 
-        return (<div className="column" id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}>{array}</div>);
+        return (<div className="column cell-dead" id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}></div>);
       })}
           </div>
         )
@@ -54,20 +55,52 @@ class CreateBoard extends React.Component {
     )
   }
 
-  render() {
+  analyseCell() {
 
+      board.map(function(input, irow) {
+
+      input.map(function(array, icol){
+        setTimeout(function(){$(`#cell-${irow}-${icol}`).addClass('cell-alive')},1000)
+      })
+
+
+      })
+
+
+  }
+
+
+  render() {
+this.fillDeadArray()
     return (
       <div className="container">
+{this.mapArray()}
+{this.analyseCell()}
 
-       {this.drawBoard2()}
 </div>
     );
   }
 }
 
+
+
+
+
+
 ReactDOM.render(
   <CreateBoard height={boardHeight} width={boardWidth} />, document.getElementById('root')
 )
+
+
+
+
+
+
+
+
+
+
+
 
 
 $('.column').click(function(){
@@ -83,6 +116,7 @@ $('.column').click(function(){
 
   if (array == "cell-alive"){
     $(`#cell-${id1}-${id2}`).addClass('cell-alive');
+
   }
 })
 })
@@ -92,5 +126,7 @@ $('.column').click(function(){
 })
 
 function calcSur(index){
+  let idCol = parseInt(index.split('-')[2], 10);
+  let idRow = parseInt(index.split('-')[1], 10);
 
 }

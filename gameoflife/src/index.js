@@ -20,7 +20,7 @@ class CreateBoard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      size: 50,
+      update: false,
     };
 
   }
@@ -40,14 +40,16 @@ class CreateBoard extends React.Component {
 
   }
 
-  mapArray() {
+  mapArray(e) {
     return (
       board.map(function(input, irow) {
         return (
           <div className="row" key={`cell-${irow}`}>{
       input.map(function(array, icol){
-
+        if(e !== Number){
         return (<div className="column cell-dead" id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}></div>);
+}
+return (<div className={`column board[irow][icol]`} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}>{e}</div>);
       })}
           </div>
         )
@@ -60,7 +62,9 @@ class CreateBoard extends React.Component {
       board.map(function(input, irow) {
 
       input.map(function(array, icol){
-        setTimeout(function(){$(`#cell-${irow}-${icol}`).addClass('cell-alive')},1000)
+        let count;
+        calcSur(irow,icol,board,(output)=>count=output)
+        document.getElementById(`cell-${irow}-${icol}`).innerHTML = count;
       })
 
 
@@ -75,8 +79,8 @@ this.fillDeadArray()
     return (
       <div className="container">
 {this.mapArray()}
-{this.analyseCell()}
 
+<button type="button" onClick={this.analyseCell.bind(this)}>test</button>
 </div>
     );
   }
@@ -106,10 +110,10 @@ ReactDOM.render(
 $('.column').click(function(){
   let idCol = parseInt(this.id.split('-')[2], 10);
   let idRow = parseInt(this.id.split('-')[1], 10);//parseInt(this.id.slice(5, this.id.length),10);
-  console.log(`.cell-${idRow}-${idCol+1}`);
-  console.log(this.id);
+  //console.log(`.cell-${idRow}-${idCol+1}`);
+  //console.log(this.id);
   board[idRow][idCol]="cell-alive";
-  console.log(board[idRow][idCol]);
+
   board.map(function(input, id1) {
 
   input.map(function(array, id2){
@@ -120,13 +124,39 @@ $('.column').click(function(){
   }
 })
 })
+
   //$( this ).toggleClass('cell-select')
   //$(`#cell-${idRow}-${idCol+1}`).toggleClass('cell-close')
   //$(`#cell-${idRow}-${idCol+1}`).toggleClass('cell-close')
 })
 
-function calcSur(index){
-  let idCol = parseInt(index.split('-')[2], 10);
-  let idRow = parseInt(index.split('-')[1], 10);
+function calcSur(row,column,matrix,callback){
+  const rowLength = matrix[0].length;
+  const colLength = matrix.length;
+  const rowUp = row-1;
+  const rowDown = row+1;
+  const columnLeft = column-1;
+  const columnRight = column+1;
+  const status = matrix[row][column];
+  const fullCheck = [[rowUp,columnLeft],[rowUp,column],[rowUp,columnRight],[row,columnLeft],[row,columnRight],[rowDown,columnLeft],[rowDown,column],[rowDown,columnRight]];
+  let countAlive = 0;
 
+  //status !== "cell-dead" ? countAlive++: null;
+
+    //chech status of surrounding cells
+  fullCheck.map(function(cell) {
+    const NO_VALUE = "cell-dead";
+    let value, hasValue;
+    try {
+        hasValue = board[cell[0]][cell[1]] !== undefined;
+        value = hasValue ? board[cell[0]][cell[1]] : NO_VALUE;
+    } catch (e) {
+        value = NO_VALUE;
+    }
+    value === "cell-alive" ? countAlive++ : null;
+
+
+  })
+
+  callback(countAlive);
 }

@@ -7,25 +7,25 @@ import './App.css';
 import $ from 'jquery';
 
 let board = [];
-let boardWidth = 7;
-let boardHeight = 5;
-//let generation = 1;
-let cellCount = 0;
+let boardWidth = 20;
+let boardHeight = 20;
+let generation = 0;
+//let cellCount = 0;
 
 function async (fn) {
-    setTimeout(fn, 1000);
+    setTimeout(fn, 10);
 }
 
 class CreateBoard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      update: false,
+      generation: 0,
     };
 
   }
-
-  fillDeadArray() {
+  componentWillMount(){
+    if (this.state.generation === 0){
     let height = this.props.height;
     let width = this.props.width;
 
@@ -37,75 +37,99 @@ class CreateBoard extends React.Component {
       }
       board.push(tempArr);
     }
-
+    this.setState({generation:1});
+  }
+  console.log(board);
   }
 
-  mapArray(e) {
-    return (
-      board.map(function(input, irow) {
+  updateArray() {
+    if (this.state.generation === 0){
+    let height = this.props.height;
+    let width = this.props.width;
+
+    for (var i = 0; i < height; i++) {
+      let tempArr = []
+      for (var ii = 1; ii <= width; ii++) {
+        tempArr.push("cell-dead");
+
+      }
+      board.push(tempArr);
+    }
+    this.setState({generation:1});
+  }
+  console.log(board);
+  }
+
+mapArray(e) {
+    return (board.map(function(input, irow) {
         return (
-          <div className="row" key={`cell-${irow}`}>{
-      input.map(function(array, icol){
-        if(e !== Number){
-        return (<div className="column cell-dead" id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}></div>);
-}
-return (<div className={`column board[irow][icol]`} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}>{e}</div>);
-      })}
-          </div>
+            <div className="row" key={`cell-${irow}`}>{input.map(function(array, icol) {
+
+                    return (
+                        <div className={`column ${board[irow][icol]}`} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}>{e}</div>
+                    );
+                })}
+            </div>
         )
-      })
-    )
-  }
+    }))
+}
 
-  analyseCell() {
+analyseCell() {
+    board.map(function(input, irow) {
+        input.map(function(array, icol) {
+            let count;
+            if (board[irow][icol] === "cell-dying"){
+              board[irow][icol] = "cell-dead"
+            }else if (board[irow][icol] === "cell-born") {
+              board[irow][icol] = "cell-alive"
+            }
 
-      board.map(function(input, irow) {
+            calcSur(irow, icol, board, (output) => count = output)
+            board[irow][icol] = count;
+        })
+    })
+    this.setState({generation:generation++});
+  async(function(){  board.map(function(input, irow) {
+        input.map(function(array, icol) {
+            if (board[irow][icol] === "cell-dying"){
+              board[irow][icol] = "cell-dead"
+            }else if (board[irow][icol] === "cell-born") {
+              board[irow][icol] = "cell-alive"
+            }
 
-      input.map(function(array, icol){
-        let count;
-        calcSur(irow,icol,board,(output)=>count=output)
-        document.getElementById(`cell-${irow}-${icol}`).innerHTML = count;
-      })
 
+        })
+    })
+  })
 
-      })
-
-
-  }
-
-
-  render() {
-this.fillDeadArray()
-    return (
-      <div className="container">
-{this.mapArray()}
-
-<button type="button" onClick={this.analyseCell.bind(this)}>test</button>
-</div>
-    );
-  }
+}
+intervalFunc(){
+  let this_ = this
+  setInterval(function(){console.log("test");
+    this_.analyseCell();
+  }, 200);
 }
 
 
+render() {
 
-
-
+    return (
+      <div className='container'>
+        <div className="gridContainer">
+            {this.mapArray()}
+          </div>
+            <button type='button'>Generate Random Board</button>
+            <button type='button'>Pauze</button>
+            <button type="button" onClick={this.intervalFunc.bind(this)}>Run</button>
+            <button type='button'>Clear</button>
+        </div>
+    );
+}
+}
 
 ReactDOM.render(
   <CreateBoard height={boardHeight} width={boardWidth} />, document.getElementById('root')
 )
-
-
-
-
-
-
-
-
-
-
-
-
 
 $('.column').click(function(){
   let idCol = parseInt(this.id.split('-')[2], 10);
@@ -118,7 +142,8 @@ $('.column').click(function(){
 
   input.map(function(array, id2){
 
-  if (array == "cell-alive"){
+  if (array === "cell-alive"){
+    $(`#cell-${id1}-${id2}`).removeClass('cell-dead');
     $(`#cell-${id1}-${id2}`).addClass('cell-alive');
 
   }
@@ -131,19 +156,15 @@ $('.column').click(function(){
 })
 
 function calcSur(row,column,matrix,callback){
-  const rowLength = matrix[0].length;
-  const colLength = matrix.length;
   const rowUp = row-1;
   const rowDown = row+1;
   const columnLeft = column-1;
   const columnRight = column+1;
-  const status = matrix[row][column];
+  let status = matrix[row][column]; //status: [cell-born, cell-dead] [cell-dying, cell-alive, cell-old]
   const fullCheck = [[rowUp,columnLeft],[rowUp,column],[rowUp,columnRight],[row,columnLeft],[row,columnRight],[rowDown,columnLeft],[rowDown,column],[rowDown,columnRight]];
   let countAlive = 0;
 
-  //status !== "cell-dead" ? countAlive++: null;
-
-    //chech status of surrounding cells
+  //chech status of surrounding cells
   fullCheck.map(function(cell) {
     const NO_VALUE = "cell-dead";
     let value, hasValue;
@@ -153,10 +174,20 @@ function calcSur(row,column,matrix,callback){
     } catch (e) {
         value = NO_VALUE;
     }
-    value === "cell-alive" ? countAlive++ : null;
-
-
+    if (value === "cell-alive" || value === "cell-old" || value === "cell-dying"){
+      countAlive++;
+    }
   })
 
-  callback(countAlive);
+  if(status === "cell-alive" || status === "cell-old"){
+
+    if (countAlive === 2 || countAlive === 3){
+      callback("cell-old");
+    }else{
+      callback("cell-dying");
+    }
+  }else if (status === "cell-dead" ) {
+    countAlive === 3 ? callback("cell-born") : callback("cell-dead");
+  }
+
 }

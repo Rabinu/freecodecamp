@@ -1,21 +1,21 @@
 
-.container{
+.gridContainer{
   display: table;
-  width: 100%;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
  /*height: 2em; /*this will define the height of the box*/
 }
 .row{
  display: table-row;
- height: 2em;
- width: 80%;
- margin-left: auto;
- margin-right: auto;
+ height: 20px;
+
 }
 
 .row .column{
   display: table-cell;
- border:1px solid;
- width: (100/24)*1%-1%;
+  border:1px solid;
+  width: (100/24)*1%;
  //float: left;
  //height: 100%;
 }
@@ -33,4 +33,16 @@
 
 .cell-alive{
   background: green;
+}
+
+.cell-old{
+  background: green;
+}
+
+.cell-born{
+  background: blue;
+}
+
+.cell-dying{
+  background: red;
 }

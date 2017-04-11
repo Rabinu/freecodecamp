@@ -1,16 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import {Grid, Row, Col, Clearfix, Button} from 'react-bootstrap';
-//import 'bootstrap/dist/css/bootstrap.css';
-//import 'bootstrap/dist/css/bootstrap-theme.css';
 import './App.css';
-import $ from 'jquery';
+//import $ from 'jquery';
 
-let board = [];
+
 let boardWidth = 20;
 let boardHeight = 20;
-let generation = 0;
-//let cellCount = 0;
+
 
 function async (fn) {
     setTimeout(fn, 10);
@@ -20,12 +16,23 @@ class CreateBoard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      board:[],
       generation: 0,
+      sim:false,
+      timerID:'',
+      add:false
     };
 
   }
   componentWillMount(){
     if (this.state.generation === 0){
+    this.genRandom()
+  }
+  }
+
+  clearBoard() {
+    this.state.board = [];
+    this.pause();
     let height = this.props.height;
     let width = this.props.width;
 
@@ -35,38 +42,23 @@ class CreateBoard extends React.Component {
         tempArr.push("cell-dead");
 
       }
-      board.push(tempArr);
+      this.state.board.push(tempArr);
     }
-    this.setState({generation:1});
-  }
-  console.log(board);
-  }
+    this.setState({generation:1,
+    board: this.state.board});
 
-  updateArray() {
-    if (this.state.generation === 0){
-    let height = this.props.height;
-    let width = this.props.width;
 
-    for (var i = 0; i < height; i++) {
-      let tempArr = []
-      for (var ii = 1; ii <= width; ii++) {
-        tempArr.push("cell-dead");
-
-      }
-      board.push(tempArr);
-    }
-    this.setState({generation:1});
-  }
-  console.log(board);
   }
 
-mapArray(e) {
+mapArray() {
+  const this_ = this;
+  let board = this.state.board;
     return (board.map(function(input, irow) {
         return (
             <div className="row" key={`cell-${irow}`}>{input.map(function(array, icol) {
 
                     return (
-                        <div className={`column ${board[irow][icol]}`} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}>{e}</div>
+                        <div className={`column ${board[irow][icol]}`} onClick={this_.onSubmit.bind(this)} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}></div>
                     );
                 })}
             </div>
@@ -75,6 +67,7 @@ mapArray(e) {
 }
 
 analyseCell() {
+let board = this.state.board;
     board.map(function(input, irow) {
         input.map(function(array, icol) {
             let count;
@@ -88,7 +81,11 @@ analyseCell() {
             board[irow][icol] = count;
         })
     })
-    this.setState({generation:generation++});
+    this.state.generation++;
+    this.setState({generation:this.state.generation,
+    board: board});
+    // Wat was hier ook alweer de functie van?
+    /*
   async(function(){  board.map(function(input, irow) {
         input.map(function(array, icol) {
             if (board[irow][icol] === "cell-dying"){
@@ -100,28 +97,87 @@ analyseCell() {
 
         })
     })
-  })
+  })*/
 
 }
 intervalFunc(){
+  if (this.state.sim === false){
   let this_ = this
-  setInterval(function(){console.log("test");
+  this.state.sim = true;
+  this.state.timerID = setInterval(function(){
     this_.analyseCell();
-  }, 200);
+  }, 1000);
+}
+}
+
+genRandom(){
+
+  const height = this.props.height;
+  const width = this.props.width;
+  const status = ["cell-dead", "cell-alive"];
+  this.state.board = [];
+  for (var i = 0; i < height; i++) {
+    let tempArr = []
+    for (var ii = 1; ii <= width; ii++) {
+      tempArr.push(status[Math.floor((Math.random() * 2) )]);
+
+    }
+    this.state.board.push(tempArr);
+  }
+  this.setState({generation:1, board:this.state.board},()=>console.log(this.state));
+this.intervalFunc();
+
+}
+
+pause(){
+  this.state.sim = false;
+clearInterval(this.state.timerID);
+}
+
+onSubmit(e){
+  e.preventDefault();
+  const {id} = e.target
+
+  let idCol = parseInt(id.split('-')[2], 10);
+  let idRow = parseInt(id.split('-')[1], 10);//parseInt(this.id.slice(5, this.id.length),10);
+    //console.log(`.cell-${idRow}-${idCol+1}`);
+    console.log(idCol,idRow);
+    /*
+    board[idRow][idCol]="cell-alive";
+
+    board.map(function(input, id1) {
+
+    input.map(function(array, id2){
+
+    if (array === "cell-alive"){
+      $(`#cell-${id1}-${id2}`).removeClass('cell-dead');
+      $(`#cell-${id1}-${id2}`).addClass('cell-alive');
+
+    }
+  })
+  })
+
+
+*/
 }
 
 
+
 render() {
+
+
 
     return (
       <div className='container'>
         <div className="gridContainer">
             {this.mapArray()}
           </div>
-            <button type='button'>Generate Random Board</button>
-            <button type='button'>Pauze</button>
+            <button type='button' onClick={this.genRandom.bind(this)}>Generate Random Board</button>
+            <button type='button' onClick={this.pause.bind(this)}>Pause</button>
             <button type="button" onClick={this.intervalFunc.bind(this)}>Run</button>
-            <button type='button'>Clear</button>
+            <button type='button' onClick={this.clearBoard.bind(this)}>Clear</button>
+            <div>Generation {this.state.generation}</div>
+            <div></div>
         </div>
     );
 }
@@ -130,7 +186,7 @@ render() {
 ReactDOM.render(
   <CreateBoard height={boardHeight} width={boardWidth} />, document.getElementById('root')
 )
-
+/*
 $('.column').click(function(){
   let idCol = parseInt(this.id.split('-')[2], 10);
   let idRow = parseInt(this.id.split('-')[1], 10);//parseInt(this.id.slice(5, this.id.length),10);
@@ -154,6 +210,8 @@ $('.column').click(function(){
   //$(`#cell-${idRow}-${idCol+1}`).toggleClass('cell-close')
   //$(`#cell-${idRow}-${idCol+1}`).toggleClass('cell-close')
 })
+*/
+
 
 function calcSur(row,column,matrix,callback){
   const rowUp = row-1;
@@ -169,8 +227,8 @@ function calcSur(row,column,matrix,callback){
     const NO_VALUE = "cell-dead";
     let value, hasValue;
     try {
-        hasValue = board[cell[0]][cell[1]] !== undefined;
-        value = hasValue ? board[cell[0]][cell[1]] : NO_VALUE;
+        hasValue = matrix[cell[0]][cell[1]] !== undefined;
+        value = hasValue ? matrix[cell[0]][cell[1]] : NO_VALUE;
     } catch (e) {
         value = NO_VALUE;
     }

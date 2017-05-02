@@ -1,15 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-//import $ from 'jquery';
 
-
-let boardWidth = 20;
-let boardHeight = 20;
+let boardWidth = 50;
+let boardHeight = 50;
+const speedcontrol = 200;
 
 
 function async (fn) {
-    setTimeout(fn, 10);
+    setTimeout(fn, 1);
 }
 
 class CreateBoard extends React.Component {
@@ -58,7 +57,7 @@ mapArray() {
             <div className="row" key={`cell-${irow}`}>{input.map(function(array, icol) {
 
                     return (
-                        <div className={`column ${board[irow][icol]}`} onClick={this_.onSubmit.bind(this)} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}></div>
+                        <div className={`column ${board[irow][icol]}`} onClick={this_.onSubmit.bind(this_)} id={`cell-${irow}-${icol}`} key={`cell-${irow}-${icol}`}></div>
                     );
                 })}
             </div>
@@ -71,42 +70,40 @@ let board = this.state.board;
     board.map(function(input, irow) {
         input.map(function(array, icol) {
             let count;
-            if (board[irow][icol] === "cell-dying"){
-              board[irow][icol] = "cell-dead"
-            }else if (board[irow][icol] === "cell-born") {
-              board[irow][icol] = "cell-alive"
-            }
+
 
             calcSur(irow, icol, board, (output) => count = output)
             board[irow][icol] = count;
         })
     })
-    this.state.generation++;
-    this.setState({generation:this.state.generation,
-    board: board});
-    // Wat was hier ook alweer de functie van?
-    /*
-  async(function(){  board.map(function(input, irow) {
+
+// shows dying and born cells
+// remove de async function to remove dying and born cells
+async(function() {
+    board.map(function(input, irow) {
         input.map(function(array, icol) {
-            if (board[irow][icol] === "cell-dying"){
-              board[irow][icol] = "cell-dead"
-            }else if (board[irow][icol] === "cell-born") {
-              board[irow][icol] = "cell-alive"
+            if (board[irow][icol] === "cell-dying") {
+                board[irow][icol] = "cell-dead"
+            } else if (board[irow][icol] === "cell-born") {
+                board[irow][icol] = "cell-alive"
             }
-
-
         })
     })
-  })*/
+})
+
+  this.state.generation++;
+  this.setState({generation:this.state.generation,
+  board: board});
 
 }
+// set the speed of the function
 intervalFunc(){
   if (this.state.sim === false){
   let this_ = this
   this.state.sim = true;
   this.state.timerID = setInterval(function(){
     this_.analyseCell();
-  }, 1000);
+  }, speedcontrol);
 }
 }
 
@@ -125,7 +122,7 @@ genRandom(){
     this.state.board.push(tempArr);
   }
   this.setState({generation:1, board:this.state.board},()=>console.log(this.state));
-this.intervalFunc();
+  //this.intervalFunc(); //auto start sim
 
 }
 
@@ -138,27 +135,24 @@ onSubmit(e){
   e.preventDefault();
   const {id} = e.target
 
+  let idRow = parseInt(id.split('-')[1], 10);
   let idCol = parseInt(id.split('-')[2], 10);
-  let idRow = parseInt(id.split('-')[1], 10);//parseInt(this.id.slice(5, this.id.length),10);
-    //console.log(`.cell-${idRow}-${idCol+1}`);
-    console.log(idCol,idRow);
-    /*
-    board[idRow][idCol]="cell-alive";
 
-    board.map(function(input, id1) {
+  if (this.state.board[idRow][idCol] === "cell-alive"){
+    this.state.board[idRow][idCol] = "cell-dead"
+  }else if (this.state.board[idRow][idCol] === "cell-dead") {
+    this.state.board[idRow][idCol] = "cell-alive"
+  }
+  this.setState({board:this.state.board});
 
-    input.map(function(array, id2){
+}
 
-    if (array === "cell-alive"){
-      $(`#cell-${id1}-${id2}`).removeClass('cell-dead');
-      $(`#cell-${id1}-${id2}`).addClass('cell-alive');
+editBoardSize(){
 
-    }
-  })
-  })
+}
 
+editSpeed(){
 
-*/
 }
 
 
@@ -167,51 +161,56 @@ render() {
 
 
 
-    return (
-      <div className='container'>
-        <div className="gridContainer">
-            {this.mapArray()}
-          </div>
-            <button type='button' onClick={this.genRandom.bind(this)}>Generate Random Board</button>
-            <button type='button' onClick={this.pause.bind(this)}>Pause</button>
-            <button type="button" onClick={this.intervalFunc.bind(this)}>Run</button>
-            <button type='button' onClick={this.clearBoard.bind(this)}>Clear</button>
-            <div>Generation {this.state.generation}</div>
-            <div></div>
-        </div>
-    );
+return (
+
+    <div className="gridContainer">
+      <div className='setting-buttons-group'>
+<div className="dropdown">
+
+        <button type='button' className='setting-buttons' id='setting-size' >Board size</button>
+        <button type='button' className='setting-buttons' id='setting-speed'>Speed</button>
+
+    <button className="dropbtn">Dropdown</button>
+    <div className="dropdown-content">
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#">Link 3</a>
+    </div>
+  </div>
+      </div>
+
+      <div className='generation-counter'>Generation: {this.state.generation}</div>
+      <div className='board-container'>
+        {this.mapArray()}
+      </div>
+      <div className="button-group">
+        <button type='button' className='control-buttons' onClick={this.genRandom.bind(this)}>Generate Random Board</button>
+        <button type='button' className='control-buttons' onClick={this.pause.bind(this)}>Pause</button>
+        <button type="button" className='control-buttons' onClick={this.intervalFunc.bind(this)}>Run</button>
+        <button type='button' className='control-buttons' onClick={this.clearBoard.bind(this)}>Clear</button>
+
+      </div>
+      <div className="add-text">Blue cells are newborn cells<br/>
+      Green cells are old cells<br />
+    Red cells are dying cells<br />
+  <br />
+  You can edit the board by clicking on the cells<br />
+
+  </div>
+    </div>
+
+  )
 }
 }
+
+class DropdownMenu extends React.Component {
+
+}
+
 
 ReactDOM.render(
   <CreateBoard height={boardHeight} width={boardWidth} />, document.getElementById('root')
 )
-/*
-$('.column').click(function(){
-  let idCol = parseInt(this.id.split('-')[2], 10);
-  let idRow = parseInt(this.id.split('-')[1], 10);//parseInt(this.id.slice(5, this.id.length),10);
-  //console.log(`.cell-${idRow}-${idCol+1}`);
-  //console.log(this.id);
-  board[idRow][idCol]="cell-alive";
-
-  board.map(function(input, id1) {
-
-  input.map(function(array, id2){
-
-  if (array === "cell-alive"){
-    $(`#cell-${id1}-${id2}`).removeClass('cell-dead');
-    $(`#cell-${id1}-${id2}`).addClass('cell-alive');
-
-  }
-})
-})
-
-  //$( this ).toggleClass('cell-select')
-  //$(`#cell-${idRow}-${idCol+1}`).toggleClass('cell-close')
-  //$(`#cell-${idRow}-${idCol+1}`).toggleClass('cell-close')
-})
-*/
-
 
 function calcSur(row,column,matrix,callback){
   const rowUp = row-1;

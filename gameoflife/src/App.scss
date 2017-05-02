@@ -1,26 +1,133 @@
 
-.gridContainer{
-  display: table;
-  width: 50%;
+h1{
+  color:black;
   margin-left: auto;
   margin-right: auto;
- /*height: 2em; /*this will define the height of the box*/
+  text-align: center;
 }
+
+
+.header{
+  background-color: #c4ffcd;
+}
+
+.gridContainer{
+  display: table;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+.board-container{
+  padding: 20px;
+  margin-top: 20px;
+  margin-right: -20px;
+  border-radius: 3%;
+  background-color: #8fa7d8;
+
+}
+
 .row{
  display: table-row;
- height: 20px;
-
+ height: 10px;
 }
 
 .row .column{
   display: table-cell;
   border:1px solid;
-  width: (100/24)*1%;
+  width: 10px;
+  min-width: 10px;
  //float: left;
  //height: 100%;
 }
 
+.button-group{
+  float: left;
+  margin-top: 10px;
 
+}
+.generation-counter{
+text-align: right;
+background-color: #8fa7d8;
+display:inline-block;
+float:right;
+font-size: 20px;
+font-weight: bold;
+
+
+}
+
+.control-buttons{
+  font-size: 20px;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color: #c4ffcd;
+  margin-right: 5px;
+  padding: 5px 5px
+}
+
+.setting-buttons{
+  font-size: 12px;
+  border-radius: 5px 5px 0px 0px;
+  border: 1px solid black;
+  border-bottom: none;
+  background-color: #8fa7d8;
+  margin-right: 5px;
+  padding: 5px 5px
+  }
+
+  .setting-buttons-group{
+    margin-bottom: -20px;
+    margin-left: 20px;
+  }
+
+.add-text{
+  text-align: left;
+  margin-top: 80px;
+  border-radius: 4%;
+  background-color: #ededed;
+  margin-right: 180px;
+  padding: 10px;
+}
+
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
 
 .cell-new{
   background: red;

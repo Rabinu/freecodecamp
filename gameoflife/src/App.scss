@@ -21,7 +21,7 @@ h1{
   padding: 20px;
   margin-top: 20px;
   margin-right: -20px;
-  border-radius: 3%;
+  border-radius: 20px;
   background-color: #8fa7d8;
 
 }
@@ -72,7 +72,8 @@ font-weight: bold;
   border-bottom: none;
   background-color: #8fa7d8;
   margin-right: 5px;
-  padding: 5px 5px
+  padding: 5px 5px;
+  cursor: pointer;
   }
 
   .setting-buttons-group{
@@ -112,14 +113,17 @@ font-weight: bold;
     z-index: 1;
 }
 
-.dropdown-content a {
+
+.dropdown-content li {
+    cursor: pointer;
+    margin-left: -40px;
     color: black;
-    padding: 12px 16px;
+    padding: 12px 10px;
     text-decoration: none;
     display: block;
 }
 
-.dropdown-content a:hover {background-color: #f1f1f1}
+.dropdown-content li:hover {background-color: #f1f1f1}
 
 .dropdown:hover .dropdown-content {
     display: block;

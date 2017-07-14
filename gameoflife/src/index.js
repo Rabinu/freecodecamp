@@ -2,11 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 
-let boardWidth = 50;
-let boardHeight = 50;
-const speedcontrol = 200;
-
-
 function async (fn) {
     setTimeout(fn, 1);
 }
@@ -19,7 +14,10 @@ class CreateBoard extends React.Component {
       generation: 0,
       sim:false,
       timerID:'',
-      add:false
+      add:false,
+      boardHeight: 40,
+      boardWidth: 40,
+      boardSpeed: 200,
     };
 
   }
@@ -32,8 +30,8 @@ class CreateBoard extends React.Component {
   clearBoard() {
     this.state.board = [];
     this.pause();
-    let height = this.props.height;
-    let width = this.props.width;
+    let height = this.state.boardHeight;
+    let width = this.state.boardWidth;
 
     for (var i = 0; i < height; i++) {
       let tempArr = []
@@ -70,8 +68,6 @@ let board = this.state.board;
     board.map(function(input, irow) {
         input.map(function(array, icol) {
             let count;
-
-
             calcSur(irow, icol, board, (output) => count = output)
             board[irow][icol] = count;
         })
@@ -103,14 +99,25 @@ intervalFunc(){
   this.state.sim = true;
   this.state.timerID = setInterval(function(){
     this_.analyseCell();
-  }, speedcontrol);
+  }, this.state.boardSpeed);
 }
+}
+
+changespeed(e){
+
+  let newSpeed = parseInt(e.target.id[6], 10)*50;
+  if (this.state.sim === true){
+  this.setState({boardSpeed: newSpeed},()=>{this.pause(),
+    this.intervalFunc()});}
+    else{
+      this.setState({boardSpeed: newSpeed});
+    }
 }
 
 genRandom(){
 
-  const height = this.props.height;
-  const width = this.props.width;
+  const height = this.state.boardHeight;
+  const width = this.state.boardWidth;
   const status = ["cell-dead", "cell-alive"];
   this.state.board = [];
   for (var i = 0; i < height; i++) {
@@ -121,7 +128,7 @@ genRandom(){
     }
     this.state.board.push(tempArr);
   }
-  this.setState({generation:1, board:this.state.board},()=>console.log(this.state));
+  this.setState({generation:1, board:this.state.board});
   //this.intervalFunc(); //auto start sim
 
 }
@@ -130,6 +137,8 @@ pause(){
   this.state.sim = false;
 clearInterval(this.state.timerID);
 }
+
+
 
 onSubmit(e){
   e.preventDefault();
@@ -147,14 +156,29 @@ onSubmit(e){
 
 }
 
-editBoardSize(){
+changeBoardSize(e){
+
+  let newSize = parseInt(e.target.id[5], 10)*40;/*
+  if (this.state.sim === true){
+  this.setState({board: newSize}, ()=>  {this.pause(),
+    this.intervalFunc()});}
+    else{
+      this.setState({boardSpeed: newSpeed});
+    }
+    */
+    if (newSize === 40){
+        this.setState({boardHeight: newSize,
+        boardWidth: newSize}, ()=>  this.clearBoard());
+}
+    else{
+      this.setState({boardHeight: Math.floor(newSize*9/16),
+      boardWidth: newSize}, ()=>  this.clearBoard());
+
+
+    }
+
 
 }
-
-editSpeed(){
-
-}
-
 
 
 render() {
@@ -165,18 +189,29 @@ return (
 
     <div className="gridContainer">
       <div className='setting-buttons-group'>
-<div className="dropdown">
+        <div className="dropdown">
 
         <button type='button' className='setting-buttons' id='setting-size' >Board size</button>
+          <div id="setting-size-dd" className="dropdown-content">
+            <ul>
+            <li id="size-1" onClick={this.changeBoardSize.bind(this)}>Small</li>
+            <li id="size-2" onClick={this.changeBoardSize.bind(this)}>Medium</li>
+            <li id="size-3" onClick={this.changeBoardSize.bind(this)}>Big</li>
+            </ul>
+          </div>
+            </div>
+            <div className="dropdown">
         <button type='button' className='setting-buttons' id='setting-speed'>Speed</button>
 
-    <button className="dropbtn">Dropdown</button>
-    <div className="dropdown-content">
-      <a href="#">Link 1</a>
-      <a href="#">Link 2</a>
-      <a href="#">Link 3</a>
+        <div className="dropdown-content">
+      <ul>
+        <li id="speed-8" onClick={this.changespeed.bind(this)}>Slow</li>
+        <li id="speed-4" onClick={this.changespeed.bind(this)}>Normal</li>
+        <li id="speed-1" onClick={this.changespeed.bind(this)}>Fast</li>
+      </ul>
     </div>
   </div>
+
       </div>
 
       <div className='generation-counter'>Generation: {this.state.generation}</div>
@@ -203,13 +238,9 @@ return (
 }
 }
 
-class DropdownMenu extends React.Component {
-
-}
-
 
 ReactDOM.render(
-  <CreateBoard height={boardHeight} width={boardWidth} />, document.getElementById('root')
+  <CreateBoard />, document.getElementById('root')
 )
 
 function calcSur(row,column,matrix,callback){

@@ -3,14 +3,10 @@ import {
   EDIT_TODO,
   TOGGLE_TODO,
   REMOVE_TODO,
-  FILTER_TODO,
-  FILTER_SHOW_ALL,
-  FILTER_SHOW_TODO,
-  FILTER_SHOW_COMPLETED
-} from '../actions/actions'
-import {combineReducers} from 'redux';
+  FILTER_TODO
+} from '../constants';
 
-export const todoReducer = (state = [], action) => {
+const todoReducer = (state = [], action) => {
 
   switch (action.type) {
     case ADD_TODO:
@@ -49,14 +45,5 @@ export const todoReducer = (state = [], action) => {
   }
 
 }
-export const filterReducer = (state = "SHOW_ALL", action) => {
-  switch (action.type) {
-    case FILTER_TODO:
-      return action.filter
-    default:
-      return state;
 
-  }
-}
-
-//export const combineReducers({todo: todoReducer, filter: filterReducer})
+export default todoReducer;

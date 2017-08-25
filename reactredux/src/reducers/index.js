@@ -3,7 +3,6 @@ import {
   EDIT_TODO,
   TOGGLE_TODO,
   REMOVE_TODO,
-  FILTER_TODO
 } from '../constants';
 
 const todoReducer = (state = [], action) => {

@@ -16,18 +16,18 @@ class App extends React.Component {
   }
 
   handleSubmit(){
+    if (this.state.input !== ''){
     this.props.addTodo(this.state.input);
     this.setState({input:''});
+  }
   }
 
 
 
   render(){
     return (
-      <div className="App">
-        <div className="form-inline">
-          <div className="form-group">
-            <input className="form-control"
+          <div >
+            <input
               placeholder="What to do?"
               onChange={this.handleChange.bind(this)}
               value={this.state.input}
@@ -40,9 +40,6 @@ class App extends React.Component {
             </button>
             <ListItems {...this.props} />
           </div>
-        </div>
-
-      </div>
     )
 
   }

@@ -4,15 +4,16 @@ class ListItems extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      input:'',
       isEditing: false
     }
   }
-  renderButtons(id) {
+  renderButtons(id, text) {
 
     if (this.state.isEditing){
       return (
         <span>
-          <button onClick={()=>this.setState({isEditing:false})}>submit</button>
+          <button onClick={()=>this.handleSubmit(id)}>submit</button>
           <button onClick={()=>this.setState({isEditing:false})}>cancel</button>
         </span>
         )
@@ -20,7 +21,12 @@ class ListItems extends React.Component {
     }
     return (
       <span>
-        <button onClick={()=>this.setState({isEditing:true})}>edit</button>
+        <button onClick={()=>this.setState({
+            isEditing:true,
+            input:text
+          })}>
+          edit
+        </button>
         <button onClick={() => this.props.removeTodo(id)}>remove</button>
       </span>
 )
@@ -28,17 +34,42 @@ class ListItems extends React.Component {
 
   }
 
+  renderText(todo){
+        if (this.state.isEditing){
+
+      return (
+        <input value={this.state.input} onChange={this.handleChange.bind(this)}/>
+      )
+    }
+    return (
+      <span style={todo.completed ? {color:'green'}:{color:'red'}} onClick={()=> this.props.toggleTodo(todo.id)}>{todo.text}</span>
+    )
+
+  }
+
+
+  handleChange(e){
+    this.setState({input:e.target.value})
+  }
+
+  handleSubmit(id){
+    this.props.editTodo(id, this.state.input);
+      this.setState({
+      input:'',
+      isEditing:false
+    });
+  }
+
   render() {
     const {todos} = this.props;
-    console.log('todos', todos)
     return (
       <ul>
         {todos.map(todo => {
           return (
             <li key={todo.id}>
               <div>
-                {this.state.isEditing ? <input type='input' initialValue={todo.text} /> : todo.text}
-                {this.renderButtons(todo.id)}
+                {this.renderText(todo)}
+                {this.renderButtons(todo.id, todo.text)}
               </div>
 
             </li>

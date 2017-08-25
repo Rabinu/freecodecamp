@@ -1,6 +1,6 @@
 import App from '../components/App';
 import {connect} from 'react-redux';
-import {addTodo, removeTodo} from '../actions'
+import {addTodo, removeTodo, editTodo, toggleTodo} from '../actions'
 
 const mapStateToProps = (state) => {
   return {todos:state}
@@ -12,6 +12,6 @@ const mapStateToProps = (state) => {
   }
 }*/
 
-const AppContainer = connect(mapStateToProps, {addTodo, removeTodo})(App);
+const AppContainer = connect(mapStateToProps, {addTodo, removeTodo, editTodo, toggleTodo})(App);
 
 export default AppContainer;

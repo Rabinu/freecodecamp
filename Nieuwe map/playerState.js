@@ -1,9 +1,13 @@
 import {playerStateInit} from '../initialState';
-import {MOVE_PLAYER} from '../constants';
+import {MOVE_PLAYER, INIT} from '../constants';
 
 
 const playerState = (state = playerStateInit, action) => {
   switch (action.type){
+    case  INIT:
+     return state
+
+
     case MOVE_PLAYER:
 
       const directionX = action.direction[0];

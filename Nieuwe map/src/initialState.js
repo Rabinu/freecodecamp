@@ -1,4 +1,4 @@
-export const playingfieldInit = {
+export const gameboardInit = {
   height: 8,
   width: 8,
   level: 0,
@@ -6,9 +6,10 @@ export const playingfieldInit = {
   start_location: '',
   end_location: '',
   boss_location: '',
+  easy_enemy_locations: [],
+  hard_enemy_locations: [],
   min_enemy:'',
-  max_enemy:'',
-  playingfield:[],
+  max_enemy:''
 }
 
 

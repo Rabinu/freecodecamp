@@ -14,26 +14,10 @@ class MainApp extends React.Component {
     this.genField();
     document.addEventListener("keydown", this.test.bind(this));
   }
-
-  genPlayingfield(){
-    const {playerState, playingfield} = this.props.state;
-    const height = playingfield.height;
-    const width = playingfield.width;
-
-    //generate outerwall
-
-  }
-
-  roomCreator(){
-
-    
-  }
-
-
   genField() {
-    const {playerState, playingfield} = this.props.state;
-    const height = playingfield.height;
-    const width = playingfield.width;
+    const {playerState, gameboard} = this.props.state;
+    const height = gameboard.height;
+    const width = gameboard.width;
     const playerX = playerState.location[0];
     const playerY = playerState.location[1];
     let visibleField = [];

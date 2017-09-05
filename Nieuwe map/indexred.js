@@ -1,9 +1,9 @@
 import {combineReducers} from 'redux'
 import playerState from './playerState';
-import playingfield from './playingfield';
+import gameboard from './gameboard';
 
 const rootReducer = combineReducers({
-  playingfield,
+  gameboard,
   playerState
 });
 

@@ -4,9 +4,6 @@ import {MOVE_PLAYER, INIT} from '../constants';
 
 const playerState = (state = playerStateInit, action) => {
   switch (action.type){
-    case  INIT:
-     return state
-
 
     case MOVE_PLAYER:
 

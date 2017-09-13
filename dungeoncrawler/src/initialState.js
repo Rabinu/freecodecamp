@@ -1,6 +1,6 @@
 export const playingfieldInit = {
-  height: 8,
-  width: 8,
+  height: 90,
+  width: 90,
   level: 0,
   max_level: 3,
   start_location: '',
@@ -9,6 +9,8 @@ export const playingfieldInit = {
   min_enemy:'',
   max_enemy:'',
   playingfield:[],
+  rooms:[],
+  max_rooms:5
 }
 
 

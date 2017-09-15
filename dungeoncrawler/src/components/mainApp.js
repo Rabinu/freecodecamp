@@ -35,73 +35,51 @@ class MainApp extends React.Component {
         }
 
 
-    this.placeRooms();
+
 
 
     for (let h = 0; h <= height; h++) {
       let row = [];
       for (let w = 0; w <= width; w++) {
-        if (w >= startroomX && w < (startroomX + startroom.width) && h >= startroomY && h < (startroomY + startroom.height)) {
+        /*if (w >= startroomX && w < (startroomX + startroom.width) && h >= startroomY && h < (startroomY + startroom.height)) {
           row.push('room')
         } else {
           row.push('wall')
-        }
+        }*/
+        row.push('wall')
       }
       playingfieldboard.push(row)
     }
 
     //this.searchRooms(playingfieldboard)
 
+    this.placeRooms(callback => {
+      callback.map(room=>{/*
+          for(let h = room.coordY[0]; h <= room.coordY[1]; h++){
+            for(let w = room.coordX[0]; h <= room.coordX[1]; w++){
+                playingfieldboard[h][w] = "room";
+            }
+          }*/
+          console.log(room.coordY[0],room.coordY[1],room.coordX[0],room.coordX[1])
+          for (let h = room.coordY[0]; h <= room.coordY[1]; h++){
+            for(let w = room.coordX[0]; w <= room.coordX[1]; w++){
+                playingfieldboard[h][w] = "room";
+            }
+          }
 
-    this.setState({playingfieldboard});
+
+      })
+
+      this.setState({playingfieldboard});
+    });
+
+
+
 
     //generate outerwall
 
   }
 
-  searchRooms(field) {
-    let tr = [];
-    let tl = [];
-    let br = [];
-    let bl = [];
-    let oldBlock = [];
-    let newBlock = [];
-    let counterX = 0;
-    let counterY = 0
-    let hallNum = this.generateRandom(1,4);
-
-    field.map((row, rowI) => {
-      row.map((col, colI) => {
-        if (col === "room") {
-
-          counterX++
-          oldBlock = [colI, rowI]
-        }
-      })
-      if (counterX > 0 && counterY === 0 ){
-        tr = [oldBlock[0]-(counterX-1),oldBlock[1]];
-        tl = oldBlock;
-        counterX = 0
-        counterY++
-      }
-      if (counterX > 0){
-        counterX = 0;
-        br = [tr[0],tr[1]+counterY];
-        bl = [tl[0],tl[1]+counterY]
-        counterY++
-      }
-    })
-
-
-
-    /*
-    this.state.rooms.map((room)=>{
-      console.log("test")
-      ()=>console.log(this.state)
-      room === [tl,tr,bl,br] ? console.log("error") : this.setState({rooms:[...this.state.rooms,[tl,tr,bl,br]]})
-    })
-    */
-  }
 
   placeRooms(callback) {
     const {playingfield} = this.props.state;
@@ -114,47 +92,97 @@ class MainApp extends React.Component {
       let roomX = 0;
       let roomY = 0;
 
+      //create the first room
       if (fieldRooms.length === 0) {
-        roomX = this.generateRandom(0, (playingfield.width - room.width));
-        roomY = this.generateRandom(0, (playingfield.height - room.height));
+        roomX = this.generateRandom(1, (playingfield.width - room.width -1));
+        roomY = this.generateRandom(1, (playingfield.height - room.height-1));
         fieldRooms.push(
           {
           coordX:[roomX,roomX+room.width-1],
           coordY:[roomY,roomY+room.height-1],
           roomNumber: 1,
-          halls:[0,this.generateRandom(1,4)]
+          halls:this.generateRandom(1,4)
           }
         )
         currentRoomCount++
       } else {
+        //create other rooms
+        const roomOrder = this.shuffleArray();
         let previousRoom = fieldRooms[fieldRooms.length-1]
-        if (previousRoom.halls[0] < previousRoom.halls[1]){
-          let hallOrder = this.shuffleArray()
-          /*switch (hallOrder[i]) {
-            case 1:
-              [previousRoom.coordX[0],previousRoom.coordX[1]]
-            case 2:
+        let hallcount = 0
 
-            case 3:
+        let minX = previousRoom.coordX[0] - room.width + 1;
+        minX < 0 ? minX = 0 : null;
+        let maxX = previousRoom.coordX[1];
+        maxX > playingfield.width ? maxX = playingfield.width : null;
 
-            case 4:
+        let minY = previousRoom.coordY[0] - room.height - 1;
+        minY < 0 ? minY = 0 : null;
+        let maxY = previousRoom.coordY[1]  + room.height;
+        maxY > playingfield.height ? maxY = playingfield.height : null
 
-          }*/
+
+        //create room around the previousroom by hallcount
+        while (previousRoom.halls > hallcount){
+
+
+          switch(roomOrder[hallcount]){/*
+            case 1://top
+              roomY = previousRoom.coordY[0]-2;
+              roomX = minX//this.generateRandom(minX,maxY)
+
+              break;
+            case 2://right
+              roomY = minY
+              roomX = previousRoom.coordX[1]+2
+
+              break;
+            case 3://bottom
+              roomY = previousRoom.coordY[0]+2;
+              roomX = minX//this.generateRandom(minX,maxY)
+              break;
+            case 4://left
+              roomY = minY;
+              roomX = previousRoom.coordX[0]-2
+            break;*/
+            default:
+              roomY = minY
+              roomX = this.generateRandom(minX,maxX)
+
+          }
+          fieldRooms.push(
+            {
+            coordX:[roomX,roomX+room.width-1],
+            coordY:[roomY,roomY+room.height-1],
+            roomNumber: fieldRooms[fieldRooms.length-1].roomNumber+1,
+            halls:this.generateRandom(1,4)
+            }
+          )
+
+          hallcount++
+
+          currentRoomCount++
+          if (currentRoomCount === playingfield.max_rooms){
+            break;
+          }
         }
+        hallcount = 0
 
-        roomX = this.generateRandom(0, (playingfield.width - room.width));
-        roomY = this.generateRandom(0, (playingfield.height - room.height));
 
-        currentRoomCount++
+
+
+        //(maxX - minX) < room.width ? console.log("to small") : console.log("okay")
+
+
+
+
 
       }
 
 
-
-
-
     }
 
+    callback(fieldRooms)
 
 
 
